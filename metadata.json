@@ -1,0 +1,6 @@
+{
+  "name": "UniDesk - One Front Door for Everything",
+  "description": "Unified university service platform routing student requests across IT, Finance, Academic services, Timetable, Exams, and Notices.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
