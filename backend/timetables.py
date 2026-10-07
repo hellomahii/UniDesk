@@ -45,16 +45,16 @@ def add_timetable(timetable: dict):
     """
 
     values = (
-        timetable["year"],
-        timetable["batch"],
-        timetable["department"],
-        timetable["sub_department"],
-        timetable["section"],
-        timetable["day"],
-        timetable["time"],
-        timetable["subject"],
-        timetable["faculty"],
-        timetable["room"]
+        timetable.get("year"),
+        timetable.get("batch"),
+        timetable.get("department"),
+        timetable.get("sub_department"),
+        timetable.get("section"),
+        timetable.get("day"),
+        timetable.get("time"),
+        timetable.get("subject"),
+        timetable.get("faculty"),
+        timetable.get("room")
     )
 
     cursor.execute(query, values)
@@ -95,16 +95,16 @@ def update_timetable(
     """
 
     values = (
-        timetable["year"],
-        timetable["batch"],
-        timetable["department"],
-        timetable["sub_department"],
-        timetable["section"],
-        timetable["day"],
-        timetable["time"],
-        timetable["subject"],
-        timetable["faculty"],
-        timetable["room"],
+        timetable.get("year"),
+        timetable.get("batch"),
+        timetable.get("department"),
+        timetable.get("sub_department"),
+        timetable.get("section"),
+        timetable.get("day"),
+        timetable.get("time"),
+        timetable.get("subject"),
+        timetable.get("faculty"),
+        timetable.get("room"),
         timetable_id
     )
 

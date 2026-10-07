@@ -353,23 +353,23 @@ export const DataProvider: React.FC<{
               ? 'Network Connectivity'
               : ticket.category ===
                 'account_authentication'
-              ? 'Account & Authentication'
-              : ticket.category ===
-                'hardware_port'
-              ? 'Hardware & Port'
-              : ticket.category ===
-                'software_licensing'
-              ? 'Software Licensing'
-              : ticket.category || 'General',
+                ? 'Account & Authentication'
+                : ticket.category ===
+                  'hardware_port'
+                  ? 'Hardware & Port'
+                  : ticket.category ===
+                    'software_licensing'
+                    ? 'Software Licensing'
+                    : ticket.category || 'General',
 
           department:
             ticket.department === 'it'
               ? 'IT'
               : ticket.department === 'finance'
-              ? 'Finance'
-              : ticket.department === 'academic'
-              ? 'Academic'
-              : ticket.department || 'General',
+                ? 'Finance'
+                : ticket.department === 'academic'
+                  ? 'Academic'
+                  : ticket.department || 'General',
 
           assignedTo:
             ticket.assigned_to || 'Unassigned',
@@ -378,42 +378,42 @@ export const DataProvider: React.FC<{
             ticket.status === 'open'
               ? 'Pending'
               : ticket.status === 'in_progress'
-              ? 'In Progress'
-              : ticket.status === 'resolved'
-              ? 'Resolved'
-              : ticket.status === 'closed'
-              ? 'Closed'
-              : ticket.status || 'Pending',
+                ? 'In Progress'
+                : ticket.status === 'resolved'
+                  ? 'Resolved'
+                  : ticket.status === 'closed'
+                    ? 'Closed'
+                    : ticket.status || 'Pending',
 
           priority:
             ticket.priority || 'Medium',
 
           createdDate: ticket.created
             ? new Date(
-                ticket.created
-              ).toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-              })
+              ticket.created
+            ).toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            })
             : ticket.updated
-            ? new Date(
+              ? new Date(
                 ticket.updated
               ).toLocaleDateString('en-GB', {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric',
               })
-            : '',
+              : '',
 
           updatedDate: ticket.updated
             ? new Date(
-                ticket.updated
-              ).toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-              })
+              ticket.updated
+            ).toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            })
             : '',
 
           description: ticket.note || '',
@@ -434,10 +434,10 @@ export const DataProvider: React.FC<{
     data: Omit<
       Ticket,
       'id' |
-        'ticketNo' |
-        'createdDate' |
-        'updatedDate' |
-        'activities'
+      'ticketNo' |
+      'createdDate' |
+      'updatedDate' |
+      'activities'
     >
   ): Ticket => {
     const newTicket: Ticket = {
@@ -454,36 +454,36 @@ export const DataProvider: React.FC<{
         ? 'network'
         : data.category ===
           'Account & Authentication'
-        ? 'account_authentication'
-        : data.category ===
-          'Hardware & Port'
-        ? 'hardware_port'
-        : data.category ===
-          'Software Licensing'
-        ? 'software_licensing'
-        : String(
-            data.category || 'general'
-          ).toLowerCase();
+          ? 'account_authentication'
+          : data.category ===
+            'Hardware & Port'
+            ? 'hardware_port'
+            : data.category ===
+              'Software Licensing'
+              ? 'software_licensing'
+              : String(
+                data.category || 'general'
+              ).toLowerCase();
 
     const backendStatus =
       data.status === 'Pending'
         ? 'open'
         : data.status === 'In Progress'
-        ? 'in_progress'
-        : data.status === 'Resolved'
-        ? 'resolved'
-        : data.status === 'Closed'
-        ? 'closed'
-        : 'open';
+          ? 'in_progress'
+          : data.status === 'Resolved'
+            ? 'resolved'
+            : data.status === 'Closed'
+              ? 'closed'
+              : 'open';
 
     const backendDepartment =
       data.department === 'IT'
         ? 'it'
         : data.department === 'Finance'
-        ? 'finance'
-        : data.department === 'Academic'
-        ? 'academic'
-        : 'general';
+          ? 'finance'
+          : data.department === 'Academic'
+            ? 'academic'
+            : 'general';
 
     fetch(`${API}/tickets`, {
       method: 'POST',
@@ -503,7 +503,7 @@ export const DataProvider: React.FC<{
 
         assigned_to:
           data.assignedTo &&
-          data.assignedTo !== 'Unassigned'
+            data.assignedTo !== 'Unassigned'
             ? data.assignedTo
             : null,
 
@@ -564,38 +564,38 @@ export const DataProvider: React.FC<{
       status === 'Pending'
         ? 'open'
         : status === 'In Progress'
-        ? 'in_progress'
-        : status === 'Resolved'
-        ? 'resolved'
-        : status === 'Closed'
-        ? 'closed'
-        : 'open';
+          ? 'in_progress'
+          : status === 'Resolved'
+            ? 'resolved'
+            : status === 'Closed'
+              ? 'closed'
+              : 'open';
 
     const backendCategory =
       ticket.category ===
-      'Network Connectivity'
+        'Network Connectivity'
         ? 'network'
         : ticket.category ===
           'Account & Authentication'
-        ? 'account_authentication'
-        : ticket.category ===
-          'Hardware & Port'
-        ? 'hardware_port'
-        : ticket.category ===
-          'Software Licensing'
-        ? 'software_licensing'
-        : String(
-            ticket.category || 'general'
-          ).toLowerCase();
+          ? 'account_authentication'
+          : ticket.category ===
+            'Hardware & Port'
+            ? 'hardware_port'
+            : ticket.category ===
+              'Software Licensing'
+              ? 'software_licensing'
+              : String(
+                ticket.category || 'general'
+              ).toLowerCase();
 
     const backendDepartment =
       ticket.department === 'IT'
         ? 'it'
         : ticket.department === 'Finance'
-        ? 'finance'
-        : ticket.department === 'Academic'
-        ? 'academic'
-        : 'general';
+          ? 'finance'
+          : ticket.department === 'Academic'
+            ? 'academic'
+            : 'general';
 
     fetch(`${API}/tickets/${ticketId}`, {
       method: 'PUT',
@@ -615,7 +615,7 @@ export const DataProvider: React.FC<{
 
         assigned_to:
           ticket.assignedTo &&
-          ticket.assignedTo !== 'Unassigned'
+            ticket.assignedTo !== 'Unassigned'
             ? ticket.assignedTo
             : null,
 
@@ -673,38 +673,38 @@ export const DataProvider: React.FC<{
       ticket.status === 'Pending'
         ? 'open'
         : ticket.status === 'In Progress'
-        ? 'in_progress'
-        : ticket.status === 'Resolved'
-        ? 'resolved'
-        : ticket.status === 'Closed'
-        ? 'closed'
-        : 'open';
+          ? 'in_progress'
+          : ticket.status === 'Resolved'
+            ? 'resolved'
+            : ticket.status === 'Closed'
+              ? 'closed'
+              : 'open';
 
     const backendCategory =
       ticket.category ===
-      'Network Connectivity'
+        'Network Connectivity'
         ? 'network'
         : ticket.category ===
           'Account & Authentication'
-        ? 'account_authentication'
-        : ticket.category ===
-          'Hardware & Port'
-        ? 'hardware_port'
-        : ticket.category ===
-          'Software Licensing'
-        ? 'software_licensing'
-        : String(
-            ticket.category || 'general'
-          ).toLowerCase();
+          ? 'account_authentication'
+          : ticket.category ===
+            'Hardware & Port'
+            ? 'hardware_port'
+            : ticket.category ===
+              'Software Licensing'
+              ? 'software_licensing'
+              : String(
+                ticket.category || 'general'
+              ).toLowerCase();
 
     const backendDepartment =
       ticket.department === 'IT'
         ? 'it'
         : ticket.department === 'Finance'
-        ? 'finance'
-        : ticket.department === 'Academic'
-        ? 'academic'
-        : 'general';
+          ? 'finance'
+          : ticket.department === 'Academic'
+            ? 'academic'
+            : 'general';
 
     fetch(`${API}/tickets/${ticketId}`, {
       method: 'PUT',
@@ -835,8 +835,8 @@ export const DataProvider: React.FC<{
           timestamp:
             item.timestamp
               ? new Date(
-                  item.timestamp
-                ).toLocaleString('en-GB')
+                item.timestamp
+              ).toLocaleString('en-GB')
               : '',
         }));
 
@@ -1003,10 +1003,83 @@ export const DataProvider: React.FC<{
   // TIMETABLE
   // =========================================================
 
+  // =========================================================
+  // TIMETABLE
+  // =========================================================
+
   const [
     timetable,
     setTimetable,
   ] = useState<TimetableClass[]>([]);
+
+  const convertTo12Hour = (time: string) => {
+    if (!time) return '';
+
+    const value = String(time).trim();
+
+    const match = value.match(
+      /^(\d{1,2}):(\d{2})(?:\s*(AM|PM))?$/i
+    );
+
+    if (!match) return value;
+
+    let hour = Number(match[1]);
+    const minute = match[2];
+    const period = match[3]?.toUpperCase();
+
+    if (period === 'PM' && hour !== 12) {
+      hour += 12;
+    }
+
+    if (period === 'AM' && hour === 12) {
+      hour = 0;
+    }
+
+    const finalPeriod =
+      hour >= 12 ? 'PM' : 'AM';
+
+    let displayHour = hour % 12;
+
+    if (displayHour === 0) {
+      displayHour = 12;
+    }
+
+    return `${String(displayHour).padStart(
+      2,
+      '0'
+    )}:${minute} ${finalPeriod}`;
+  };
+
+  const convertTo24Hour = (time: string) => {
+    if (!time) return '';
+
+    const value = String(time)
+      .trim()
+      .toUpperCase();
+
+    const match = value.match(
+      /^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i
+    );
+
+    if (!match) return value;
+
+    let hour = Number(match[1]);
+    const minute = match[2];
+    const period = match[3];
+
+    if (period === 'PM' && hour !== 12) {
+      hour += 12;
+    }
+
+    if (period === 'AM' && hour === 12) {
+      hour = 0;
+    }
+
+    return `${String(hour).padStart(
+      2,
+      '0'
+    )}:${minute}`;
+  };
 
   const loadTimetable = async () => {
     try {
@@ -1022,31 +1095,70 @@ export const DataProvider: React.FC<{
 
       const data = await response.json();
 
-      const formatted =
-        data.map((item: any) => ({
-          id: String(item.id),
+      const formatted: TimetableClass[] =
+        Array.isArray(data)
+          ? data.map((item: any) => {
+            const timeParts = String(
+              item.time || ''
+            ).split('-');
 
-          year: item.year,
+            const start =
+              timeParts[0]?.trim() || '09:00';
 
-          batch: item.batch,
+            const end =
+              timeParts[1]?.trim() || '10:00';
 
-          department: item.department,
+            return {
+              id: String(item.id),
 
-          subDepartment:
-            item.sub_department,
+              subject:
+                item.subject || '',
 
-          section: item.section,
+              courseCode:
+                item.course_code ||
+                item.courseCode ||
+                `TBL-${item.id}`,
 
-          day: item.day,
+              faculty:
+                item.faculty || '',
 
-          time: item.time,
+              room:
+                item.room || '',
 
-          subject: item.subject,
+              date:
+                item.date || '',
 
-          faculty: item.faculty,
+              day:
+                item.day || 'Monday',
 
-          room: item.room,
-        }));
+              startTime:
+                convertTo12Hour(start),
+
+              endTime:
+                convertTo12Hour(end),
+
+              year:
+                String(item.year || ''),
+
+              batch:
+                item.batch || '',
+
+              department:
+                item.department || '',
+
+              subDepartment:
+                item.sub_department ||
+                item.subDepartment ||
+                '',
+
+              section:
+                item.section || '',
+
+              color:
+                '#0D5C46',
+            };
+          })
+          : [];
 
       setTimetable(formatted);
     } catch (error) {
@@ -1060,27 +1172,35 @@ export const DataProvider: React.FC<{
   const addClass = (
     cls: Omit<TimetableClass, 'id'>
   ) => {
+    const startTime =
+      convertTo24Hour(cls.startTime);
+
+    const endTime =
+      convertTo24Hour(cls.endTime);
+
+    const payload = {
+      year: cls.year,
+      batch: cls.batch,
+      department: cls.department,
+      sub_department:
+        cls.subDepartment,
+      section: cls.section,
+      day: cls.day,
+      time: `${startTime}-${endTime}`,
+      subject: cls.subject,
+      faculty: cls.faculty,
+      room: cls.room,
+    };
+
     fetch(`${API}/timetables`, {
       method: 'POST',
 
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type':
+          'application/json',
       },
 
-      body: JSON.stringify({
-        year: (cls as any).year,
-        batch: (cls as any).batch,
-        department:
-          (cls as any).department,
-        sub_department:
-          (cls as any).subDepartment,
-        section: (cls as any).section,
-        day: (cls as any).day,
-        time: (cls as any).time,
-        subject: (cls as any).subject,
-        faculty: (cls as any).faculty,
-        room: (cls as any).room,
-      }),
+      body: JSON.stringify(payload),
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -1096,11 +1216,19 @@ export const DataProvider: React.FC<{
       })
       .then(() => {
         loadTimetable();
+
+        setToastMessage(
+          'Class scheduled successfully.'
+        );
       })
       .catch((error) => {
         console.error(
           'Failed to add timetable:',
           error
+        );
+
+        setToastMessage(
+          'Failed to schedule class.'
         );
       });
   };
@@ -1111,40 +1239,82 @@ export const DataProvider: React.FC<{
   ) => {
     const current =
       timetable.find(
-        (item) => item.id === id
+        (item) =>
+          String(item.id) ===
+          String(id)
       );
 
     if (!current) {
+      console.error(
+        'Timetable class not found:',
+        id
+      );
+
       return;
     }
 
     const merged = {
       ...current,
       ...updates,
-    } as any;
+    };
 
-    fetch(`${API}/timetables/${id}`, {
-      method: 'PUT',
+    const startTime =
+      merged.startTime ||
+      '09:00 AM';
 
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const endTime =
+      merged.endTime ||
+      '10:00 AM';
 
-      body: JSON.stringify({
-        year: merged.year,
-        batch: merged.batch,
-        department:
-          merged.department,
-        sub_department:
-          merged.subDepartment,
-        section: merged.section,
-        day: merged.day,
-        time: merged.time,
-        subject: merged.subject,
-        faculty: merged.faculty,
-        room: merged.room,
-      }),
-    })
+    const payload = {
+      year: merged.year,
+
+      batch: merged.batch,
+
+      department:
+        merged.department,
+
+      sub_department:
+        merged.subDepartment,
+
+      section:
+        merged.section,
+
+      day:
+        merged.day,
+
+      time: `${convertTo24Hour(
+        startTime
+      )}-${convertTo24Hour(
+        endTime
+      )}`,
+
+      subject:
+        merged.subject,
+
+      faculty:
+        merged.faculty,
+
+      room:
+        merged.room,
+    };
+
+    fetch(
+      `${API}/timetables/${id}`,
+      {
+        method: 'PUT',
+
+        headers: {
+          'Content-Type':
+            'application/json',
+        },
+
+        body:
+          JSON.stringify(
+            payload
+          ),
+      }
+    )
       .then(async (response) => {
         if (!response.ok) {
           const errorText =
@@ -1159,11 +1329,19 @@ export const DataProvider: React.FC<{
       })
       .then(() => {
         loadTimetable();
+
+        setToastMessage(
+          'Timetable updated successfully.'
+        );
       })
       .catch((error) => {
         console.error(
           'Failed to update timetable:',
           error
+        );
+
+        setToastMessage(
+          'Failed to update timetable.'
         );
       });
   };
@@ -1171,9 +1349,12 @@ export const DataProvider: React.FC<{
   const deleteClass = (
     id: string
   ) => {
-    fetch(`${API}/timetables/${id}`, {
-      method: 'DELETE',
-    })
+    fetch(
+      `${API}/timetables/${id}`,
+      {
+        method: 'DELETE',
+      }
+    )
       .then(async (response) => {
         if (!response.ok) {
           const errorText =
@@ -1188,11 +1369,19 @@ export const DataProvider: React.FC<{
       })
       .then(() => {
         loadTimetable();
+
+        setToastMessage(
+          'Timetable class deleted successfully.'
+        );
       })
       .catch((error) => {
         console.error(
           'Failed to delete timetable:',
           error
+        );
+
+        setToastMessage(
+          'Failed to delete timetable class.'
         );
       });
   };
@@ -1945,8 +2134,8 @@ export const DataProvider: React.FC<{
         ? 'paid'
         : status ===
           'Partially Paid'
-        ? 'partial'
-        : 'pending';
+          ? 'partial'
+          : 'pending';
 
     const updatedFee = {
       ...current,
