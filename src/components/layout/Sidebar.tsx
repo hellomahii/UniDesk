@@ -8,6 +8,7 @@ import {
   Ticket as TicketIcon,
   GitFork,
   Users,
+  CreditCard,
   UserCircle,
   LogOut,
   GraduationCap,
@@ -19,7 +20,10 @@ interface SidebarProps {
   onCloseMobile: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  isOpenMobile,
+  onCloseMobile,
+}) => {
   const { activeRole, currentPath, setCurrentPath, logout } = useAuth();
 
   const handleNavClick = (path: string) => {
@@ -46,12 +50,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
     { label: 'Notice+', path: '/admin/notices', icon: Bell },
   ];
 
-  // 4. Finance Admin Nav items: Students Info section
+  // Finance Admin Nav items
   const financeNav = [
     { label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
     { label: 'Tickets', path: '/admin/tickets', icon: TicketIcon },
     { label: 'Intent Routing', path: '/admin/routing', icon: GitFork },
-    { label: 'Students Info', path: '/admin/students', icon: Users },
+    { label: 'User / Student Info', path: '/admin/students', icon: Users },
+    { label: 'Fee Management', path: '/admin/fees', icon: CreditCard },
     { label: 'Notice+', path: '/admin/notices', icon: Bell },
   ];
 
@@ -67,9 +72,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
   ];
 
   let currentNavItems = studentNav;
-  if (activeRole === 'it_admin') currentNavItems = itNav;
-  else if (activeRole === 'finance_admin') currentNavItems = financeNav;
-  else if (activeRole === 'academic_admin') currentNavItems = academicNav;
+
+  if (activeRole === 'it_admin') {
+    currentNavItems = itNav;
+  } else if (activeRole === 'finance_admin') {
+    currentNavItems = financeNav;
+  } else if (activeRole === 'academic_admin') {
+    currentNavItems = academicNav;
+  }
 
   return (
     <>
@@ -92,13 +102,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#0D5C46] to-[#0F766E] flex items-center justify-center text-white shadow-xs border border-emerald-600/30">
               <GraduationCap className="w-5 h-5" />
             </div>
+
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-extrabold tracking-tight text-[#0D3B2E]">UniDesk</span>
+                <span className="text-xl font-extrabold tracking-tight text-[#0D3B2E]">
+                  UniDesk
+                </span>
+
                 <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded bg-emerald-100/90 text-[#0D5C46] border border-emerald-300/70">
                   Campus
                 </span>
               </div>
+
               <p className="text-[11px] text-slate-500 font-semibold leading-none mt-0.5">
                 One Front Door for Everything
               </p>
@@ -106,12 +121,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
           </div>
         </div>
 
-        {/* Role Identity Tag in Sidebar */}
+        {/* Role Identity Tag */}
         <div className="px-5 py-2.5 border-b border-[#E2ECE7]/70 bg-[#EBF4F0]/60">
           <div className="flex items-center justify-between text-xs">
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
               Workspace
             </span>
+
             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0D5C46]">
               {activeRole === 'student' && 'Student Portal'}
               {activeRole === 'it_admin' && 'IT Admin Desk'}
@@ -139,10 +155,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
               >
                 <Icon
                   className={`w-4 h-4 shrink-0 transition-transform duration-200 group-hover:scale-110 ${
-                    isActive ? 'text-[#0D5C46]' : 'text-slate-400 group-hover:text-[#0D5C46]'
+                    isActive
+                      ? 'text-[#0D5C46]'
+                      : 'text-slate-400 group-hover:text-[#0D5C46]'
                   }`}
                 />
+
                 <span className="truncate">{item.label}</span>
+
                 {isActive && (
                   <span className="ml-auto w-2 h-2 rounded-full bg-[#0D5C46]" />
                 )}
@@ -151,10 +171,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
           })}
         </nav>
 
-        {/* Bottom Profile & Logout Section (Single View Profile action) */}
+        {/* Bottom Profile & Logout Section */}
         <div className="p-3 border-t border-[#E2ECE7] bg-white space-y-1">
           <button
-            onClick={() => handleNavClick(activeRole === 'student' ? '/profile' : '/admin/profile')}
+            onClick={() =>
+              handleNavClick(
+                activeRole === 'student' ? '/profile' : '/admin/profile'
+              )
+            }
             className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all text-left cursor-pointer group ${
               currentPath === '/profile' || currentPath === '/admin/profile'
                 ? 'bg-[#E3F2EB] text-[#064E3B] font-bold shadow-2xs'
@@ -162,13 +186,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpenMobile, onCloseMobile })
             }`}
           >
             <UserCircle className="w-4 h-4 text-[#0D5C46] group-hover:scale-110 transition-transform" />
+
             <span>View Profile</span>
           </button>
+
           <button
             onClick={logout}
             className="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4 text-rose-500" />
+
             <span>Logout</span>
           </button>
         </div>

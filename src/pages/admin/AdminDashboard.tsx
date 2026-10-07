@@ -7,11 +7,6 @@ import {
   GitFork,
   ArrowRight,
   Plus,
-  Users,
-  CreditCard,
-  Calendar,
-  ClipboardList,
-  Bell,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
@@ -25,7 +20,7 @@ export const AdminDashboard: React.FC = () => {
   const getGreetingName = () => currentUser?.name || 'Administrator';
 
   // Strict department ticket scoping:
-  // Admin dashboard statistics count ONLY actual student-approved tickets for their department!
+  // Admin dashboard statistics count ONLY actual student-approved tickets for their department.
   const deptTickets =
     activeRole === 'it_admin'
       ? tickets.filter((t) => t.department === 'IT')
@@ -50,9 +45,11 @@ export const AdminDashboard: React.FC = () => {
             {activeRole === 'finance_admin' && 'University Finance & Accounts Office'}
             {activeRole === 'academic_admin' && 'Academic Affairs & Registrar Office'}
           </span>
+
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#0D3B2E]">
             Good morning, {getGreetingName()}
           </h1>
+
           <p className="mt-1 text-xs md:text-sm text-slate-500 font-medium">
             Here's an overview of your department activity, approved student requests, and routing operations.
           </p>
@@ -61,13 +58,23 @@ export const AdminDashboard: React.FC = () => {
         {/* Quick Department Action buttons */}
         <div className="flex flex-wrap items-center gap-2">
           {activeRole === 'finance_admin' && (
-            <button
-              onClick={() => setCurrentPath('/admin/students')}
-              className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 shadow-2xs transition-colors cursor-pointer"
-            >
-              Students Info
-            </button>
+            <>
+              <button
+                onClick={() => setCurrentPath('/admin/students')}
+                className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 shadow-2xs transition-colors cursor-pointer"
+              >
+                Students Info
+              </button>
+
+              <button
+                onClick={() => setCurrentPath('/admin/fees')}
+                className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 shadow-2xs transition-colors cursor-pointer"
+              >
+                Fee Management
+              </button>
+            </>
           )}
+
           {activeRole === 'academic_admin' && (
             <button
               onClick={() => setCurrentPath('/admin/timetable')}
@@ -76,12 +83,14 @@ export const AdminDashboard: React.FC = () => {
               Manage Timetable
             </button>
           )}
+
           <button
             onClick={() => setCurrentPath('/admin/tickets')}
             className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 shadow-2xs transition-colors cursor-pointer"
           >
             Manage Tickets
           </button>
+
           <button
             onClick={() => setCurrentPath('/admin/notices')}
             className="px-3.5 py-2 bg-[#0D5C46] hover:bg-[#0B4A38] text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -92,9 +101,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Primary 4 Statistics Cards:
-          Strictly actual approved tickets for that department.
-          NO "Fees Collected", NO "Pending Fee", NO "Open Inquiries", NO "Registered Students" on Finance! */}
+      {/* 2. Primary 4 Statistics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label={
@@ -110,6 +117,7 @@ export const AdminDashboard: React.FC = () => {
           variant="sage"
           onClick={() => setCurrentPath('/admin/tickets')}
         />
+
         <StatCard
           label="Pending Review"
           value={pendingCount}
@@ -118,6 +126,7 @@ export const AdminDashboard: React.FC = () => {
           variant="amber"
           onClick={() => setCurrentPath('/admin/tickets')}
         />
+
         <StatCard
           label="In Progress"
           value={inProgressCount}
@@ -126,6 +135,7 @@ export const AdminDashboard: React.FC = () => {
           variant="teal"
           onClick={() => setCurrentPath('/admin/tickets')}
         />
+
         <StatCard
           label="Resolved"
           value={resolvedCount}
@@ -138,16 +148,19 @@ export const AdminDashboard: React.FC = () => {
 
       {/* 3. Middle Section: Recent Department Tickets + Ticket Activity Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Tickets Table (2 cols) */}
+        {/* Recent Tickets Table */}
         <div className="lg:col-span-2 glass-panel rounded-2xl p-6 border border-[#E2ECE7] bg-white shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-bold text-[#132A22]">Recent Department Tickets</h3>
+                <h3 className="text-base font-bold text-[#132A22]">
+                  Recent Department Tickets
+                </h3>
                 <p className="text-xs text-slate-500">
                   Approved student-raised tickets in your queue
                 </p>
               </div>
+
               <button
                 onClick={() => setCurrentPath('/admin/tickets')}
                 className="text-xs font-semibold text-[#0D5C46] hover:text-[#093E2F] flex items-center gap-1 cursor-pointer"
@@ -167,6 +180,7 @@ export const AdminDashboard: React.FC = () => {
                     <th className="px-3.5 py-2.5">Status</th>
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-slate-100">
                   {displayTickets.map((t) => (
                     <tr
@@ -177,6 +191,7 @@ export const AdminDashboard: React.FC = () => {
                       <td className="px-3.5 py-3 font-mono font-semibold text-slate-700 whitespace-nowrap">
                         {t.ticketNo}
                       </td>
+
                       <td className="px-3.5 py-3">
                         <div className="font-semibold text-slate-900 line-clamp-1">
                           {t.subject}
@@ -185,17 +200,23 @@ export const AdminDashboard: React.FC = () => {
                           {t.category}
                         </div>
                       </td>
+
                       <td className="px-3.5 py-3 whitespace-nowrap text-slate-600">
                         {t.raisedBy}
                       </td>
+
                       <td className="px-3.5 py-3 whitespace-nowrap">
                         <StatusBadge status={t.status} />
                       </td>
                     </tr>
                   ))}
+
                   {displayTickets.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-slate-400">
+                      <td
+                        colSpan={4}
+                        className="px-4 py-8 text-center text-slate-400"
+                      >
                         No approved tickets currently logged in your department queue.
                       </td>
                     </tr>
@@ -211,10 +232,13 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Ticket Activity Progress Visualization (1 col) */}
+        {/* Ticket Activity Progress Visualization */}
         <div className="glass-panel rounded-2xl p-6 border border-[#E2ECE7] bg-white shadow-xs flex flex-col justify-between">
           <div>
-            <h3 className="text-base font-bold text-[#132A22]">Ticket Activity</h3>
+            <h3 className="text-base font-bold text-[#132A22]">
+              Ticket Activity
+            </h3>
+
             <p className="text-xs text-slate-500 mb-4">
               Resolution ratio for approved tickets
             </p>
@@ -223,15 +247,26 @@ export const AdminDashboard: React.FC = () => {
               {/* Resolved bar */}
               <div>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="font-medium text-slate-700">Resolved Cases</span>
+                  <span className="font-medium text-slate-700">
+                    Resolved Cases
+                  </span>
+
                   <span className="font-mono font-semibold text-emerald-700">
-                    {Math.round((resolvedCount / Math.max(1, totalDeptTickets)) * 100)}% ({resolvedCount})
+                    {Math.round(
+                      (resolvedCount / Math.max(1, totalDeptTickets)) * 100
+                    )}
+                    % ({resolvedCount})
                   </span>
                 </div>
+
                 <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
                     className="h-full bg-emerald-600 rounded-full"
-                    style={{ width: `${(resolvedCount / Math.max(1, totalDeptTickets)) * 100}%` }}
+                    style={{
+                      width: `${
+                        (resolvedCount / Math.max(1, totalDeptTickets)) * 100
+                      }%`,
+                    }}
                   />
                 </div>
               </div>
@@ -239,15 +274,26 @@ export const AdminDashboard: React.FC = () => {
               {/* Pending bar */}
               <div>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="font-medium text-slate-700">Pending Assignment</span>
+                  <span className="font-medium text-slate-700">
+                    Pending Assignment
+                  </span>
+
                   <span className="font-mono font-semibold text-amber-700">
-                    {Math.round((pendingCount / Math.max(1, totalDeptTickets)) * 100)}% ({pendingCount})
+                    {Math.round(
+                      (pendingCount / Math.max(1, totalDeptTickets)) * 100
+                    )}
+                    % ({pendingCount})
                   </span>
                 </div>
+
                 <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
                     className="h-full bg-amber-500 rounded-full"
-                    style={{ width: `${(pendingCount / Math.max(1, totalDeptTickets)) * 100}%` }}
+                    style={{
+                      width: `${
+                        (pendingCount / Math.max(1, totalDeptTickets)) * 100
+                      }%`,
+                    }}
                   />
                 </div>
               </div>
@@ -255,15 +301,26 @@ export const AdminDashboard: React.FC = () => {
               {/* In Progress bar */}
               <div>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="font-medium text-slate-700">Under Active Work</span>
+                  <span className="font-medium text-slate-700">
+                    Under Active Work
+                  </span>
+
                   <span className="font-mono font-semibold text-teal-700">
-                    {Math.round((inProgressCount / Math.max(1, totalDeptTickets)) * 100)}% ({inProgressCount})
+                    {Math.round(
+                      (inProgressCount / Math.max(1, totalDeptTickets)) * 100
+                    )}
+                    % ({inProgressCount})
                   </span>
                 </div>
+
                 <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
                     className="h-full bg-teal-600 rounded-full"
-                    style={{ width: `${(inProgressCount / Math.max(1, totalDeptTickets)) * 100}%` }}
+                    style={{
+                      width: `${
+                        (inProgressCount / Math.max(1, totalDeptTickets)) * 100
+                      }%`,
+                    }}
                   />
                 </div>
               </div>
@@ -271,8 +328,12 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           <div className="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500">
-            <span className="font-medium text-slate-700">Average resolution velocity:</span>{' '}
-            <span className="font-mono text-emerald-800 font-semibold">4.2 hours</span>
+            <span className="font-medium text-slate-700">
+              Average resolution velocity:
+            </span>{' '}
+            <span className="font-mono text-emerald-800 font-semibold">
+              4.2 hours
+            </span>
           </div>
         </div>
       </div>
@@ -284,9 +345,15 @@ export const AdminDashboard: React.FC = () => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-bold text-[#132A22]">Recent Notices</h3>
-                <p className="text-xs text-slate-500">Official broadcast communications</p>
+                <h3 className="text-base font-bold text-[#132A22]">
+                  Recent Notices
+                </h3>
+
+                <p className="text-xs text-slate-500">
+                  Official broadcast communications
+                </p>
               </div>
+
               <button
                 onClick={() => setCurrentPath('/admin/notices')}
                 className="text-xs font-semibold text-[#0D5C46] hover:text-[#093E2F] flex items-center gap-1 cursor-pointer"
@@ -307,10 +374,17 @@ export const AdminDashboard: React.FC = () => {
                     <span className="font-semibold text-emerald-800 uppercase tracking-wider">
                       {n.category}
                     </span>
+
                     <span className="font-mono">{n.publishDate}</span>
                   </div>
-                  <h4 className="text-xs font-bold text-slate-900 line-clamp-1">{n.title}</h4>
-                  <p className="text-xs text-slate-500 mt-1 line-clamp-1">{n.description}</p>
+
+                  <h4 className="text-xs font-bold text-slate-900 line-clamp-1">
+                    {n.title}
+                  </h4>
+
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-1">
+                    {n.description}
+                  </p>
                 </div>
               ))}
             </div>
@@ -318,6 +392,7 @@ export const AdminDashboard: React.FC = () => {
 
           <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
             <span>Manage publishing schedules via Notice+</span>
+
             <button
               onClick={() => setCurrentPath('/admin/notices')}
               className="text-[#0D5C46] font-semibold hover:underline cursor-pointer"
@@ -327,14 +402,18 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* UniDesk Intent Routing Monitor (Admin view: NO raw confidence percentages) */}
+        {/* UniDesk Intent Routing Monitor */}
         <div className="glass-panel rounded-2xl p-6 border border-[#E2ECE7] bg-white shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <GitFork className="w-4 h-4 text-[#0D5C46]" />
-                <h3 className="text-base font-bold text-[#132A22]">UniDesk Intent Stream</h3>
+
+                <h3 className="text-base font-bold text-[#132A22]">
+                  UniDesk Intent Stream
+                </h3>
               </div>
+
               <button
                 onClick={() => setCurrentPath('/admin/routing')}
                 className="text-xs font-semibold text-[#0D5C46] hover:text-[#093E2F] flex items-center gap-1 cursor-pointer"
@@ -347,24 +426,39 @@ export const AdminDashboard: React.FC = () => {
             {/* Metric distribution row without raw confidence figures */}
             <div className="grid grid-cols-3 gap-2.5 mb-5 text-center">
               <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200/60">
-                <span className="text-[11px] font-semibold text-emerald-900 block">Auto Routed</span>
-                <span className="text-xs text-slate-500 mt-1 block">Direct Resolution</span>
+                <span className="text-[11px] font-semibold text-emerald-900 block">
+                  Auto Routed
+                </span>
+                <span className="text-xs text-slate-500 mt-1 block">
+                  Direct Resolution
+                </span>
               </div>
+
               <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200/60">
-                <span className="text-[11px] font-semibold text-amber-900 block">Clarification</span>
-                <span className="text-xs text-slate-500 mt-1 block">Disambiguated</span>
+                <span className="text-[11px] font-semibold text-amber-900 block">
+                  Clarification
+                </span>
+                <span className="text-xs text-slate-500 mt-1 block">
+                  Disambiguated
+                </span>
               </div>
+
               <div className="p-3 rounded-xl bg-rose-50/70 border border-rose-200/60">
-                <span className="text-[11px] font-semibold text-rose-900 block">Human Support</span>
-                <span className="text-xs text-slate-500 mt-1 block">Direct Contact/Ticket</span>
+                <span className="text-[11px] font-semibold text-rose-900 block">
+                  Human Support
+                </span>
+                <span className="text-xs text-slate-500 mt-1 block">
+                  Direct Contact/Ticket
+                </span>
               </div>
             </div>
 
-            {/* Recent routing stream sample (No confidence badge) */}
+            {/* Recent routing stream sample */}
             <div className="space-y-2 text-xs">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1">
                 Recent Student Inquiries (NLP Interpretation Only)
               </span>
+
               {routingRecords.slice(0, 2).map((rec) => (
                 <div
                   key={rec.id}
@@ -372,11 +466,15 @@ export const AdminDashboard: React.FC = () => {
                   className="p-2.5 rounded-lg border border-slate-100 bg-[#FAFBFB] flex items-center justify-between hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   <div className="truncate mr-2">
-                    <div className="font-semibold text-slate-800 truncate">"{rec.request}"</div>
+                    <div className="font-semibold text-slate-800 truncate">
+                      "{rec.request}"
+                    </div>
+
                     <div className="text-[10px] text-slate-400 font-mono mt-0.5">
                       {rec.detectedIntent} · {rec.department}
                     </div>
                   </div>
+
                   <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 shrink-0">
                     {rec.routingLabel}
                   </span>
@@ -389,7 +487,10 @@ export const AdminDashboard: React.FC = () => {
             <span className="font-semibold text-slate-800 font-mono tabular-nums">
               127 student inquiries interpreted today
             </span>
-            <span className="text-emerald-700 font-medium">Chatbot queries ≠ Tickets</span>
+
+            <span className="text-emerald-700 font-medium">
+              Chatbot queries ≠ Tickets
+            </span>
           </div>
         </div>
       </div>

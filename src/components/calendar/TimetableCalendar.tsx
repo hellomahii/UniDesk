@@ -21,7 +21,14 @@ interface TimetableCalendarProps {
   onDeleteClass?: (cls: TimetableClass) => void;
 }
 
-const DAYS: ('Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday')[] = [
+const DAYS: (
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday'
+)[] = [
   'Monday',
   'Tuesday',
   'Wednesday',
@@ -51,26 +58,48 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
   onDeleteClass,
 }) => {
   const [viewMode, setViewMode] = useState<'Week' | 'Month' | 'Day'>('Week');
-  const [currentWeekIndex, setCurrentWeekIndex] = useState(0); // 0 = current week
-  const [selectedDay, setSelectedDay] = useState<'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday'>('Monday');
+
+  const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
+
+  const [selectedDay, setSelectedDay] = useState<
+    'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday'
+  >('Monday');
+
   const [hoveredClassId, setHoveredClassId] = useState<string | null>(null);
 
-  // Today is simulated as Wednesday (mid-week during semester)
-  const currentDayName: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' = 'Wednesday';
+  // Today is simulated as Wednesday
+  const currentDayName:
+    | 'Monday'
+    | 'Tuesday'
+    | 'Wednesday'
+    | 'Thursday'
+    | 'Friday'
+    | 'Saturday' = 'Wednesday';
 
   const getWeekRangeLabel = () => {
-    if (currentWeekIndex === 0) return 'Current Week: 28 Sep – 03 Oct 2026';
-    if (currentWeekIndex === 1) return 'Next Week: 05 Oct – 10 Oct 2026';
-    if (currentWeekIndex === -1) return 'Previous Week: 21 Sep – 26 Sep 2026';
-    return `Academic Week ${currentWeekIndex > 0 ? `+${currentWeekIndex}` : currentWeekIndex}`;
+    if (currentWeekIndex === 0) {
+      return 'Current Week: 28 Sep – 03 Oct 2026';
+    }
+
+    if (currentWeekIndex === 1) {
+      return 'Next Week: 05 Oct – 10 Oct 2026';
+    }
+
+    if (currentWeekIndex === -1) {
+      return 'Previous Week: 21 Sep – 26 Sep 2026';
+    }
+
+    return `Academic Week ${
+      currentWeekIndex > 0 ? `+${currentWeekIndex}` : currentWeekIndex
+    }`;
   };
 
-  // Helper to calculate top and height in minutes for week view (handles 12-hour AM/PM and 24-hour formats)
+  // Calculate position of a class in the week timetable.
+  // 08:00 is the starting point of the calendar.
   const calculatePosition = (startTime: string, endTime: string) => {
     const startTotal = parseTimeToMinutes(startTime);
     const endTotal = parseTimeToMinutes(endTime);
 
-    // Each hour slot is 70px high, calendar starts at 08:00 (480 minutes)
     const startMinutes = startTotal - 8 * 60;
     const durationMinutes = Math.max(30, endTotal - startTotal);
 
@@ -84,7 +113,7 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
     <div className="glass-panel rounded-2xl border border-[#E2ECE7] overflow-hidden flex flex-col shadow-xs bg-white">
       {/* Calendar Header Controls */}
       <div className="p-4 md:px-6 md:py-4 border-b border-slate-200/80 bg-[#FAFCFA] flex flex-wrap items-center justify-between gap-3">
-        {/* Navigation buttons: Previous, Today, Next */}
+        {/* Navigation buttons */}
         <div className="flex items-center gap-2">
           <div className="flex items-center border border-slate-200 rounded-lg bg-white overflow-hidden shadow-2xs">
             <button
@@ -94,12 +123,14 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
+
             <button
               onClick={() => setCurrentWeekIndex(0)}
               className="px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 border-x border-slate-200 transition-colors cursor-pointer"
             >
               Today
             </button>
+
             <button
               onClick={() => setCurrentWeekIndex((prev) => prev + 1)}
               className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
@@ -114,9 +145,9 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
           </span>
         </div>
 
-        {/* View toggle & Admin actions */}
+        {/* View toggle and Admin actions */}
         <div className="flex items-center gap-2.5">
-          {/* Segmented control: Week | Month | Day */}
+          {/* Week | Month | Day */}
           <div className="flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200/60">
             {(['Week', 'Month', 'Day'] as const).map((mode) => (
               <button
@@ -146,7 +177,7 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
         </div>
       </div>
 
-      {/* Mode 1: WEEK VIEW (Default Requirement) */}
+      {/* ==================== WEEK VIEW ==================== */}
       {viewMode === 'Week' && (
         <div className="overflow-x-auto">
           <div className="min-w-[900px]">
@@ -155,19 +186,28 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
               <div className="p-3 text-center text-slate-400 font-mono text-[11px] border-r border-slate-200/70">
                 Time
               </div>
+
               {DAYS.map((day) => {
-                const isCurrent = day === currentDayName && currentWeekIndex === 0;
+                const isCurrent =
+                  day === currentDayName && currentWeekIndex === 0;
+
                 return (
                   <div
                     key={day}
                     className={`p-3 text-center border-r last:border-r-0 border-slate-200/70 transition-colors ${
-                      isCurrent ? 'bg-[#EBF5F0] text-[#0D5C46]' : 'text-slate-700'
+                      isCurrent
+                        ? 'bg-[#EBF5F0] text-[#0D5C46]'
+                        : 'text-slate-700'
                     }`}
                   >
                     <div className="font-semibold flex items-center justify-center gap-1.5">
                       <span>{day}</span>
+
                       {isCurrent && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" title="Today" />
+                        <span
+                          className="w-1.5 h-1.5 rounded-full bg-[#10B981]"
+                          title="Today"
+                        />
                       )}
                     </div>
                   </div>
@@ -175,9 +215,9 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
               })}
             </div>
 
-            {/* Timetable Grid with positioned class cards */}
+            {/* Timetable Grid */}
             <div className="grid grid-cols-[70px_repeat(6,1fr)] relative">
-              {/* Time axis column */}
+              {/* Time axis */}
               <div className="border-r border-slate-200/70 bg-[#FAFCFA]">
                 {TIME_SLOTS.map((slot) => (
                   <div
@@ -192,7 +232,9 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
               {/* Day columns */}
               {DAYS.map((day) => {
                 const dayClasses = classes.filter((c) => c.day === day);
-                const isCurrent = day === currentDayName && currentWeekIndex === 0;
+
+                const isCurrent =
+                  day === currentDayName && currentWeekIndex === 0;
 
                 return (
                   <div
@@ -201,14 +243,21 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
                       isCurrent ? 'bg-emerald-50/15' : 'bg-white'
                     }`}
                   >
-                    {/* Background hour grid lines */}
+                    {/* Background hour grid */}
                     {TIME_SLOTS.map((slot) => (
-                      <div key={slot} className="h-[70px] border-b border-slate-100" />
+                      <div
+                        key={slot}
+                        className="h-[70px] border-b border-slate-100"
+                      />
                     ))}
 
-                    {/* Classes absolutely positioned by time */}
+                    {/* Classes */}
                     {dayClasses.map((cls) => {
-                      const { top, height } = calculatePosition(cls.startTime, cls.endTime);
+                      const { top, height } = calculatePosition(
+                        cls.startTime,
+                        cls.endTime
+                      );
+
                       const isHovered = hoveredClassId === cls.id;
 
                       return (
@@ -228,13 +277,18 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
                               : cls.subject.includes('Operating')
                               ? 'bg-cyan-50/90 border-cyan-200/80 text-cyan-950'
                               : 'bg-slate-50 border-slate-200/90 text-slate-900'
-                          } ${isHovered ? 'ring-2 ring-[#0D5C46]/40 z-20 shadow-md' : 'z-10'}`}
+                          } ${
+                            isHovered
+                              ? 'ring-2 ring-[#0D5C46]/40 z-20 shadow-md'
+                              : 'z-10'
+                          }`}
                         >
                           <div>
                             <div className="flex items-start justify-between gap-1">
                               <h5 className="font-semibold text-xs leading-tight line-clamp-1">
                                 {cls.subject}
                               </h5>
+
                               {isAdmin && (
                                 <div className="flex items-center gap-1 opacity-80 hover:opacity-100">
                                   {onEditClass && (
@@ -249,6 +303,7 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
                                       <Edit2 className="w-3 h-3" />
                                     </button>
                                   )}
+
                                   {onDeleteClass && (
                                     <button
                                       onClick={(e) => {
@@ -267,7 +322,11 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
 
                             <div className="flex items-center gap-1 text-[11px] font-mono text-slate-600 mt-0.5 tabular-nums">
                               <Clock className="w-3 h-3 shrink-0 text-slate-400" />
-                              <span>{formatTo12Hour(cls.startTime)} – {formatTo12Hour(cls.endTime)}</span>
+
+                              <span>
+                                {formatTo12Hour(cls.startTime)} –{' '}
+                                {formatTo12Hour(cls.endTime)}
+                              </span>
                             </div>
                           </div>
 
@@ -276,6 +335,7 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
                               <MapPin className="w-2.5 h-2.5 text-slate-400 shrink-0" />
                               {cls.room}
                             </span>
+
                             <span className="truncate font-mono text-[9px] uppercase px-1 rounded bg-black/5">
                               {cls.section}
                             </span>
@@ -291,9 +351,10 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
         </div>
       )}
 
-      {/* Mode 2: DAY VIEW */}
+      {/* ==================== DAY VIEW ==================== */}
       {viewMode === 'Day' && (
         <div className="p-6">
+          {/* Day selector */}
           <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
             {DAYS.map((day) => (
               <button
@@ -310,6 +371,7 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
             ))}
           </div>
 
+          {/* Classes */}
           <div className="space-y-3">
             {classes
               .filter((c) => c.day === selectedDay)
@@ -320,42 +382,61 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
                   className="p-4 rounded-xl border border-slate-200 bg-white hover:border-emerald-300 transition-colors flex items-center justify-between shadow-2xs"
                 >
                   <div className="flex items-start gap-4">
+                    {/* Time */}
                     <div className="p-2.5 rounded-lg bg-emerald-50 text-emerald-800 font-mono text-xs font-semibold text-center min-w-[100px]">
                       <div>{formatTo12Hour(cls.startTime)}</div>
-                      <div className="text-[10px] text-emerald-600">to {formatTo12Hour(cls.endTime)}</div>
+
+                      <div className="text-[10px] text-emerald-600">
+                        to {formatTo12Hour(cls.endTime)}
+                      </div>
                     </div>
+
+                    {/* Class information */}
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">{cls.subject}</h4>
+                      <h4 className="text-sm font-semibold text-slate-900">
+                        {cls.subject}
+                      </h4>
+
                       <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-slate-400" />
                           {cls.room}
                         </span>
+
                         <span>·</span>
+
                         <span className="flex items-center gap-1">
                           <User className="w-3 h-3 text-slate-400" />
                           {cls.faculty}
                         </span>
+
                         <span>·</span>
-                        <span className="font-mono text-[11px] text-slate-400">{cls.courseCode}</span>
+
+                        <span className="font-mono text-[11px] text-slate-400">
+                          {cls.courseCode}
+                        </span>
                       </div>
                     </div>
                   </div>
 
+                  {/* Admin actions */}
                   {isAdmin && (
                     <div className="flex items-center gap-2">
                       {onEditClass && (
                         <button
                           onClick={() => onEditClass(cls)}
                           className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg cursor-pointer"
+                          title="Edit class"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                       )}
+
                       {onDeleteClass && (
                         <button
                           onClick={() => onDeleteClass(cls)}
                           className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg cursor-pointer"
+                          title="Delete class"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -364,6 +445,8 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
                   )}
                 </div>
               ))}
+
+            {/* Empty state */}
             {classes.filter((c) => c.day === selectedDay).length === 0 && (
               <div className="p-8 text-center text-xs text-slate-400 border border-dashed rounded-xl">
                 No classes scheduled for {selectedDay}.
@@ -373,35 +456,51 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
         </div>
       )}
 
-      {/* Mode 3: MONTH VIEW (Clean Academic Term Overview) */}
+      {/* ==================== MONTH VIEW ==================== */}
       {viewMode === 'Month' && (
         <div className="p-6">
+          {/* Academic term information */}
           <div className="p-4 rounded-xl bg-[#F6FAF8] border border-[#E2ECE7] mb-4">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
               October 2026 Academic Term Schedule
             </h4>
+
             <p className="text-xs text-slate-500">
-              Classes run Monday through Saturday. Mid-term examination break starts on 14 October 2026.
+              Classes run Monday through Saturday. Mid-term examination break
+              starts on 14 October 2026.
             </p>
           </div>
 
+          {/* Day cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {DAYS.map((day) => {
               const dayClasses = classes.filter((c) => c.day === day);
+
               return (
-                <div key={day} className="p-3.5 rounded-xl border border-slate-200 bg-white">
+                <div
+                  key={day}
+                  className="p-3.5 rounded-xl border border-slate-200 bg-white"
+                >
                   <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
-                    <span className="text-xs font-semibold text-slate-800">{day}</span>
+                    <span className="text-xs font-semibold text-slate-800">
+                      {day}
+                    </span>
+
                     <span className="text-[11px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded">
                       {dayClasses.length} lectures
                     </span>
                   </div>
+
                   <div className="space-y-1.5 text-xs">
                     {dayClasses.map((cls) => (
-                      <div key={cls.id} className="text-slate-600 truncate">
+                      <div
+                        key={cls.id}
+                        className="text-slate-600 truncate"
+                      >
                         <span className="font-mono text-[11px] text-slate-400 mr-1.5">
                           {formatTo12Hour(cls.startTime)}
                         </span>
+
                         <span>{cls.subject}</span>
                       </div>
                     ))}

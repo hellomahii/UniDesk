@@ -68,9 +68,9 @@ const AppContent: React.FC = () => {
         return <AdminStudentsPage />;
       case '/admin/notices':
         return <NoticePlusPage />;
-      // Finance Admin merged: /admin/fees resolves to students
-      case '/admin/fees':
-        return <AdminStudentsPage />;
+// Finance Admin specific
+case '/admin/fees':
+  return <FeeManagementPage />;
       // Academic Admin specific
       case '/admin/timetable':
         return <AcademicTimetablePage />;

@@ -2,21 +2,13 @@ import React, { useState } from 'react';
 import {
   Users,
   Search,
-  Filter,
-  Shield,
-  Phone,
-  Mail,
   Home,
-  GraduationCap,
-  ChevronRight,
-  Lock,
   Edit2,
   Eye,
-  CheckCircle2,
+  Lock,
   Save,
   X,
   CreditCard,
-  DollarSign,
   TrendingUp,
   Trash2,
 } from 'lucide-react';
@@ -30,11 +22,19 @@ import { DeleteConfirmModal } from '../../components/common/DeleteConfirmModal';
 
 export const AdminStudentsPage: React.FC = () => {
   const { activeRole } = useAuth();
-  const { students, fees, updateStudent, deleteStudent, updateFeeStatus, setToastMessage } = useData();
+
+  const {
+    students,
+    fees,
+    updateStudent,
+    deleteStudent,
+    updateFeeStatus,
+    setToastMessage,
+  } = useData();
 
   const isFinanceAdmin = activeRole === 'finance_admin';
 
-  // Search & Filters (Requirements 7 & 8)
+  // Search & Filters
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState('All');
   const [yearFilter, setYearFilter] = useState('All');
@@ -42,10 +42,13 @@ export const AdminStudentsPage: React.FC = () => {
   const [batchFilter, setBatchFilter] = useState('All');
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('All');
 
-  const [selectedStudent, setSelectedStudent] = useState<StudentInfoRecord | null>(null);
+  const [selectedStudent, setSelectedStudent] =
+    useState<StudentInfoRecord | null>(null);
 
-  // Edit student modal states
-  const [editingStudent, setEditingStudent] = useState<StudentInfoRecord | null>(null);
+  // Edit student modal
+  const [editingStudent, setEditingStudent] =
+    useState<StudentInfoRecord | null>(null);
+
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editPhone, setEditPhone] = useState('');
@@ -59,17 +62,28 @@ export const AdminStudentsPage: React.FC = () => {
   const [editBatch, setEditBatch] = useState('');
   const [editAccommodation, setEditAccommodation] = useState('');
 
-  // Fee settlement modal state
-  const [settlingFeeStudent, setSettlingFeeStudent] = useState<StudentInfoRecord | null>(null);
+  // Fee settlement modal
+  const [settlingFeeStudent, setSettlingFeeStudent] =
+    useState<StudentInfoRecord | null>(null);
+
   const [paymentAmountInput, setPaymentAmountInput] = useState('');
 
-  // Delete modal state
-  const [studentToDelete, setStudentToDelete] = useState<StudentInfoRecord | null>(null);
+  // Delete confirmation
+  const [studentToDelete, setStudentToDelete] =
+    useState<StudentInfoRecord | null>(null);
 
   // Helper to get student fee
-  const getStudentFee = (student: StudentInfoRecord): StudentFeeRecord => {
-    const existing = fees.find((f) => f.studentId === student.id || f.enrollmentNo === student.enrollmentNo);
+  const getStudentFee = (
+    student: StudentInfoRecord
+  ): StudentFeeRecord => {
+    const existing = fees.find(
+      (f) =>
+        f.studentId === student.id ||
+        f.enrollmentNo === student.enrollmentNo
+    );
+
     if (existing) return existing;
+
     return {
       id: `fee-${student.id}`,
       studentId: student.id,
@@ -89,24 +103,51 @@ export const AdminStudentsPage: React.FC = () => {
   };
 
   const filteredStudents = students.filter((s) => {
-    const matchesSearch =
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.enrollmentNo.toLowerCase().includes(search.toLowerCase()) ||
-      s.email.toLowerCase().includes(search.toLowerCase());
+    const searchValue = search.toLowerCase();
 
-    const matchesDept = deptFilter === 'All' || s.department.toLowerCase().includes(deptFilter.toLowerCase());
-    const matchesYear = yearFilter === 'All' || s.year.toLowerCase().includes(yearFilter.toLowerCase());
-    const matchesSem = semesterFilter === 'All' || s.semester.toLowerCase().includes(semesterFilter.toLowerCase());
-    const matchesBatch = batchFilter === 'All' || s.batch === batchFilter;
+    const matchesSearch =
+      s.name.toLowerCase().includes(searchValue) ||
+      s.enrollmentNo.toLowerCase().includes(searchValue) ||
+      s.email.toLowerCase().includes(searchValue);
+
+    const matchesDept =
+      deptFilter === 'All' ||
+      s.department.toLowerCase().includes(deptFilter.toLowerCase());
+
+    const matchesYear =
+      yearFilter === 'All' ||
+      s.year.toLowerCase().includes(yearFilter.toLowerCase());
+
+    const matchesSemester =
+      semesterFilter === 'All' ||
+      s.semester.toLowerCase().includes(semesterFilter.toLowerCase());
+
+    const matchesBatch =
+      batchFilter === 'All' ||
+      s.batch === batchFilter;
 
     const studentFee = getStudentFee(s);
-    const matchesPaymentStatus = paymentStatusFilter === 'All' || studentFee.paymentStatus === paymentStatusFilter;
 
-    return matchesSearch && matchesDept && matchesYear && matchesSem && matchesBatch && matchesPaymentStatus;
+    const matchesPaymentStatus =
+      paymentStatusFilter === 'All' ||
+      studentFee.paymentStatus === paymentStatusFilter;
+
+    return (
+      matchesSearch &&
+      matchesDept &&
+      matchesYear &&
+      matchesSemester &&
+      matchesBatch &&
+      matchesPaymentStatus
+    );
   });
 
-  const handleOpenEdit = (student: StudentInfoRecord, e?: React.MouseEvent) => {
+  const handleOpenEdit = (
+    student: StudentInfoRecord,
+    e?: React.MouseEvent
+  ) => {
     if (e) e.stopPropagation();
+
     setEditingStudent(student);
     setEditName(student.name);
     setEditEmail(student.email);
@@ -122,8 +163,11 @@ export const AdminStudentsPage: React.FC = () => {
     setEditAccommodation(student.accommodation);
   };
 
-  const handleSaveStudentChanges = (e: React.FormEvent) => {
+  const handleSaveStudentChanges = (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
+
     if (!editingStudent) return;
 
     const updatedData: Partial<StudentInfoRecord> = {
@@ -143,7 +187,8 @@ export const AdminStudentsPage: React.FC = () => {
 
     updateStudent(editingStudent.id, updatedData);
 
-    if (selectedStudent && selectedStudent.id === editingStudent.id) {
+    // Sync selected student in the drawer if it is open.
+    if (selectedStudent?.id === editingStudent.id) {
       setSelectedStudent({
         ...selectedStudent,
         ...updatedData,
@@ -151,39 +196,78 @@ export const AdminStudentsPage: React.FC = () => {
     }
 
     setEditingStudent(null);
-    setToastMessage('Student information updated successfully.');
+    setToastMessage(
+      'Student information updated successfully.'
+    );
   };
 
-  const handleOpenFeeSettlement = (student: StudentInfoRecord, e?: React.MouseEvent) => {
+  const handleOpenFeeSettlement = (
+    student: StudentInfoRecord,
+    e?: React.MouseEvent
+  ) => {
     if (e) e.stopPropagation();
+
     setSettlingFeeStudent(student);
     setPaymentAmountInput('');
   };
 
-  const handlePostPayment = (e: React.FormEvent) => {
+  const handlePostPayment = (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
+
     if (!settlingFeeStudent) return;
+
     const fee = getStudentFee(settlingFeeStudent);
     const amount = Number(paymentAmountInput);
-    if (isNaN(amount) || amount <= 0) return;
+
+    if (
+      Number.isNaN(amount) ||
+      amount <= 0 ||
+      amount > fee.pending
+    ) {
+      return;
+    }
 
     const newPaid = fee.paid + amount;
-    const newStatus = newPaid >= fee.totalFee ? 'Paid' : newPaid > 0 ? 'Partially Paid' : 'Pending';
 
-    updateFeeStatus(fee.id, newPaid, newStatus);
+    const newStatus =
+      newPaid >= fee.totalFee
+        ? 'Paid'
+        : newPaid > 0
+        ? 'Partially Paid'
+        : 'Pending';
+
+    updateFeeStatus(
+      fee.id,
+      newPaid,
+      newStatus
+    );
+
     setSettlingFeeStudent(null);
     setPaymentAmountInput('');
-    setToastMessage('Fee payment recorded successfully.');
+
+    setToastMessage(
+      'Fee payment recorded successfully.'
+    );
   };
 
   const handleDeleteConfirm = () => {
     if (!studentToDelete) return;
+
     deleteStudent(studentToDelete.id);
-    if (selectedStudent?.id === studentToDelete.id) {
+
+    if (
+      selectedStudent?.id === studentToDelete.id
+    ) {
       setSelectedStudent(null);
     }
+
     setStudentToDelete(null);
-    setToastMessage('Record deleted successfully.');
+
+    setToastMessage(
+      'Record deleted successfully.'
+    );
   };
 
   return (
@@ -193,8 +277,14 @@ export const AdminStudentsPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[#0D3B2E] flex items-center gap-2">
             <Users className="w-6 h-6 text-[#0D5C46]" />
-            <span>{isFinanceAdmin ? 'Students Info' : 'Student Registry'}</span>
+
+            <span>
+              {isFinanceAdmin
+                ? 'Students Info'
+                : 'Student Registry'}
+            </span>
           </h1>
+
           <p className="mt-1 text-xs text-slate-500">
             {isFinanceAdmin
               ? 'Consolidated student registry and bursar fee accounts. Track academic details alongside tuition status.'
@@ -203,16 +293,21 @@ export const AdminStudentsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Finance Summary Cards (when Finance Admin) */}
+      {/* Finance Summary Cards */}
       {isFinanceAdmin && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
               Total Fee Inflow
             </span>
+
             <div className="mt-1.5 text-2xl font-bold font-mono text-[#0D3B2E] tabular-nums">
-              ₹{fees.reduce((acc, f) => acc + f.paid, 0).toLocaleString()}
+              ₹
+              {fees
+                .reduce((acc, f) => acc + f.paid, 0)
+                .toLocaleString()}
             </div>
+
             <span className="text-[11px] text-emerald-700 font-medium flex items-center gap-1 mt-1">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>Current Term Reconciled</span>
@@ -223,34 +318,48 @@ export const AdminStudentsPage: React.FC = () => {
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
               Outstanding Tuition Dues
             </span>
+
             <div className="mt-1.5 text-2xl font-bold font-mono text-amber-700 tabular-nums">
-              ₹{fees.reduce((acc, f) => acc + f.pending, 0).toLocaleString()}
+              ₹
+              {fees
+                .reduce((acc, f) => acc + f.pending, 0)
+                .toLocaleString()}
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Due by 15 October 2026</span>
+
+            <span className="text-[11px] text-slate-500 mt-1 block">
+              Due by 15 October 2026
+            </span>
           </div>
 
           <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
               Registry Count
             </span>
+
             <div className="mt-1.5 text-2xl font-bold font-mono text-slate-800 tabular-nums">
               {students.length} Enrolled
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Integrated Student & Fee Records</span>
+
+            <span className="text-[11px] text-slate-500 mt-1 block">
+              Integrated Student & Fee Records
+            </span>
           </div>
         </div>
       )}
 
-      {/* 8. SEARCH & COMPREHENSIVE FILTERS */}
+      {/* Search & Filters */}
       <div className="glass-panel rounded-2xl p-4 border border-[#E2ECE7] bg-white shadow-soft space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+
             <input
               type="text"
               placeholder="Search by student name, enrollment ID, or email..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
               className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
             />
           </div>
@@ -259,7 +368,9 @@ export const AdminStudentsPage: React.FC = () => {
             {/* Year */}
             <select
               value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
+              onChange={(e) =>
+                setYearFilter(e.target.value)
+              }
               className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
             >
               <option value="All">All Years</option>
@@ -272,70 +383,130 @@ export const AdminStudentsPage: React.FC = () => {
             {/* Batch */}
             <select
               value={batchFilter}
-              onChange={(e) => setBatchFilter(e.target.value)}
+              onChange={(e) =>
+                setBatchFilter(e.target.value)
+              }
               className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
             >
               <option value="All">All Batches</option>
-              <option value="2025–2029">2025–2029</option>
-              <option value="2024–2028">2024–2028</option>
-              <option value="2023-2027">2023-2027</option>
+              <option value="2025–2029">
+                2025–2029
+              </option>
+              <option value="2024–2028">
+                2024–2028
+              </option>
+              <option value="2023-2027">
+                2023-2027
+              </option>
             </select>
 
             {/* Department */}
             <select
               value={deptFilter}
-              onChange={(e) => setDeptFilter(e.target.value)}
+              onChange={(e) =>
+                setDeptFilter(e.target.value)
+              }
               className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
             >
-              <option value="All">All Departments</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Mechanical">Mechanical</option>
-              <option value="Electrical">Electrical</option>
+              <option value="All">
+                All Departments
+              </option>
+              <option value="Computer Science">
+                Computer Science
+              </option>
+              <option value="Electronics">
+                Electronics
+              </option>
+              <option value="Mechanical">
+                Mechanical
+              </option>
+              <option value="Electrical">
+                Electrical
+              </option>
             </select>
 
             {/* Semester */}
             <select
               value={semesterFilter}
-              onChange={(e) => setSemesterFilter(e.target.value)}
+              onChange={(e) =>
+                setSemesterFilter(e.target.value)
+              }
               className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
             >
-              <option value="All">All Semesters</option>
-              <option value="Semester 3">Semester 3</option>
-              <option value="Semester 5">Semester 5</option>
+              <option value="All">
+                All Semesters
+              </option>
+              <option value="Semester 3">
+                Semester 3
+              </option>
+              <option value="Semester 5">
+                Semester 5
+              </option>
             </select>
 
-            {/* Payment Status (Always useful, required for Finance) */}
+            {/* Payment Status */}
             <select
               value={paymentStatusFilter}
-              onChange={(e) => setPaymentStatusFilter(e.target.value)}
+              onChange={(e) =>
+                setPaymentStatusFilter(e.target.value)
+              }
               className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
             >
-              <option value="All">All Fee Statuses</option>
+              <option value="All">
+                All Fee Statuses
+              </option>
               <option value="Paid">Paid</option>
-              <option value="Partially Paid">Partially Paid</option>
-              <option value="Pending">Pending</option>
+              <option value="Partially Paid">
+                Partially Paid
+              </option>
+              <option value="Pending">
+                Pending
+              </option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* 7. COMBINED STUDENT & FEE INFORMATION TABLE */}
+      {/* Student & Fee Table */}
       <div className="glass-panel rounded-2xl border border-[#E2ECE7] bg-white overflow-hidden shadow-soft">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-[#F8FAF9] text-slate-600 font-semibold border-b border-slate-200">
               <tr>
-                <th className="px-5 py-3.5">Student / Enrollment</th>
-                <th className="px-5 py-3.5">Department & Batch</th>
-                <th className="px-5 py-3.5">Contact</th>
-                <th className="px-5 py-3.5">Accommodation</th>
-                <th className="px-5 py-3.5">Total Fee</th>
-                <th className="px-5 py-3.5">Paid / Pending</th>
-                <th className="px-5 py-3.5">Payment Status</th>
-                <th className="px-5 py-3.5 text-right">Actions</th>
+                <th className="px-5 py-3.5">
+                  Student / Enrollment
+                </th>
+
+                <th className="px-5 py-3.5">
+                  Department & Batch
+                </th>
+
+                <th className="px-5 py-3.5">
+                  Contact
+                </th>
+
+                <th className="px-5 py-3.5">
+                  Accommodation
+                </th>
+
+                <th className="px-5 py-3.5">
+                  Total Fee
+                </th>
+
+                <th className="px-5 py-3.5">
+                  Paid / Pending
+                </th>
+
+                <th className="px-5 py-3.5">
+                  Payment Status
+                </th>
+
+                <th className="px-5 py-3.5 text-right">
+                  Actions
+                </th>
               </tr>
             </thead>
+
             <tbody className="divide-y divide-slate-100">
               {filteredStudents.map((s) => {
                 const fee = getStudentFee(s);
@@ -343,58 +514,79 @@ export const AdminStudentsPage: React.FC = () => {
                 return (
                   <tr
                     key={s.id}
-                    onClick={() => setSelectedStudent(s)}
+                    onClick={() =>
+                      setSelectedStudent(s)
+                    }
                     className="hover:bg-[#F9FAF9] transition-colors cursor-pointer group"
                   >
                     <td className="px-5 py-4 whitespace-nowrap">
                       <div className="font-bold text-slate-900 group-hover:text-[#0D5C46] transition-colors">
                         {s.name}
                       </div>
+
                       <div className="font-mono text-[11px] text-slate-500 mt-0.5 font-semibold">
                         {s.enrollmentNo}
                       </div>
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap">
-                      <div className="text-slate-800 font-medium">{s.department}</div>
+                      <div className="text-slate-800 font-medium">
+                        {s.department}
+                      </div>
+
                       <div className="text-[11px] text-slate-500 font-mono">
-                        {s.year} ({s.semester}) · {s.batch}
+                        {s.year} ({s.semester}) ·{' '}
+                        {s.batch}
                       </div>
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap">
-                      <div className="text-slate-700 font-mono text-[11px]">{s.email}</div>
-                      <div className="text-slate-500 font-mono text-[11px]">{s.phone}</div>
+                      <div className="text-slate-700 font-mono text-[11px]">
+                        {s.email}
+                      </div>
+
+                      <div className="text-slate-500 font-mono text-[11px]">
+                        {s.phone}
+                      </div>
                     </td>
 
                     <td className="px-5 py-4 text-slate-600 max-w-xs">
-                      <span className="line-clamp-1">{s.accommodation}</span>
+                      <span className="line-clamp-1">
+                        {s.accommodation}
+                      </span>
                     </td>
 
-                    {/* Fee Information Columns */}
                     <td className="px-5 py-4 whitespace-nowrap font-mono font-semibold text-slate-900 tabular-nums">
                       ₹{fee.totalFee.toLocaleString()}
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap font-mono tabular-nums">
-                      <div className="text-emerald-800 font-medium">₹{fee.paid.toLocaleString()} paid</div>
+                      <div className="text-emerald-800 font-medium">
+                        ₹{fee.paid.toLocaleString()} paid
+                      </div>
+
                       <div className="text-amber-700 font-semibold text-[11px]">
                         ₹{fee.pending.toLocaleString()} due
                       </div>
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap">
-                      <StatusBadge status={fee.paymentStatus} />
+                      <StatusBadge
+                        status={fee.paymentStatus}
+                      />
                     </td>
 
-                    {/* Action buttons */}
                     <td className="px-5 py-4 whitespace-nowrap text-right">
                       <div
                         className="flex items-center justify-end gap-1.5"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) =>
+                          e.stopPropagation()
+                        }
                       >
                         <button
-                          onClick={() => setSelectedStudent(s)}
+                          onClick={() =>
+                            setSelectedStudent(s)
+                          }
                           className="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                           title="View Profile"
                         >
@@ -402,19 +594,27 @@ export const AdminStudentsPage: React.FC = () => {
                           <span>View</span>
                         </button>
 
-                        {isFinanceAdmin && fee.pending > 0 && (
-                          <button
-                            onClick={(e) => handleOpenFeeSettlement(s, e)}
-                            className="px-2.5 py-1 text-xs font-semibold text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
-                            title="Reconcile / Record Fee Settlement"
-                          >
-                            <CreditCard className="w-3 h-3" />
-                            <span>Payment</span>
-                          </button>
-                        )}
+                        {isFinanceAdmin &&
+                          fee.pending > 0 && (
+                            <button
+                              onClick={(e) =>
+                                handleOpenFeeSettlement(
+                                  s,
+                                  e
+                                )
+                              }
+                              className="px-2.5 py-1 text-xs font-semibold text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                              title="Record Fee Settlement"
+                            >
+                              <CreditCard className="w-3 h-3" />
+                              <span>Payment</span>
+                            </button>
+                          )}
 
                         <button
-                          onClick={(e) => handleOpenEdit(s, e)}
+                          onClick={(e) =>
+                            handleOpenEdit(s, e)
+                          }
                           className="px-2.5 py-1 text-xs font-semibold text-[#0D5C46] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/60 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                           title="Edit Student Information"
                         >
@@ -422,7 +622,6 @@ export const AdminStudentsPage: React.FC = () => {
                           <span>Edit</span>
                         </button>
 
-                        {/* 10. DELETE RECORD ACTION */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -441,7 +640,10 @@ export const AdminStudentsPage: React.FC = () => {
 
               {filteredStudents.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-slate-400">
+                  <td
+                    colSpan={8}
+                    className="px-6 py-12 text-center text-slate-400"
+                  >
                     No student records found matching the specified filters.
                   </td>
                 </tr>
@@ -451,47 +653,65 @@ export const AdminStudentsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 9. FINANCE STUDENT DETAIL DRAWER: Organized into Personal, Academic, Accommodation, and Fee Information */}
+      {/* Student Detail Drawer */}
       {selectedStudent && (
         <Drawer
           isOpen={!!selectedStudent}
-          onClose={() => setSelectedStudent(null)}
+          onClose={() =>
+            setSelectedStudent(null)
+          }
           title={`Student Record · ${selectedStudent.name}`}
           subtitle={`Enrollment: ${selectedStudent.enrollmentNo}`}
           width="xl"
         >
           {(() => {
-            const fee = getStudentFee(selectedStudent);
+            const fee =
+              getStudentFee(selectedStudent);
 
             return (
               <div className="space-y-6 text-xs">
-                {/* Header Profile card */}
+                {/* Header Profile */}
                 <div className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-[#FAFBFB] to-[#F2F8F5] border border-slate-200">
                   <div className="flex items-center gap-3.5">
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#0D5C46] to-[#0F766E] text-white flex items-center justify-center font-bold text-xl shrink-0 shadow-xs">
                       {selectedStudent.name.charAt(0)}
                     </div>
+
                     <div>
-                      <h3 className="text-base font-bold text-slate-900">{selectedStudent.name}</h3>
+                      <h3 className="text-base font-bold text-slate-900">
+                        {selectedStudent.name}
+                      </h3>
+
                       <div className="text-slate-500 font-mono mt-0.5">
-                        {selectedStudent.enrollmentNo} · {selectedStudent.email}
+                        {selectedStudent.enrollmentNo} ·{' '}
+                        {selectedStudent.email}
                       </div>
+
                       <div className="text-emerald-800 font-medium text-[11px] mt-1">
-                        Status: {selectedStudent.status} (Enrolled {selectedStudent.admissionDate})
+                        Status: {selectedStudent.status}{' '}
+                        (Enrolled{' '}
+                        {selectedStudent.admissionDate})
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleOpenEdit(selectedStudent)}
+                      onClick={() =>
+                        handleOpenEdit(selectedStudent)
+                      }
                       className="px-3 py-1.5 bg-[#0D5C46] hover:bg-[#0B4A38] text-white font-semibold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                       <span>Edit</span>
                     </button>
+
                     <button
-                      onClick={() => setStudentToDelete(selectedStudent)}
+                      onClick={() =>
+                        setStudentToDelete(
+                          selectedStudent
+                        )
+                      }
                       className="p-2 text-rose-600 hover:bg-rose-50 rounded-xl cursor-pointer"
                       title="Delete Student"
                     >
@@ -500,126 +720,215 @@ export const AdminStudentsPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 1. Personal Information */}
+                {/* Personal Information */}
                 <div>
                   <span className="font-semibold uppercase tracking-wider text-slate-400 block text-[11px] mb-2">
                     1. Personal Information
                   </span>
+
                   <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-white border border-slate-200">
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Primary Contact</span>
-                      <span className="font-semibold text-slate-900 font-mono">{selectedStudent.phone}</span>
+                      <span className="text-slate-400 block text-[11px]">
+                        Primary Contact
+                      </span>
+                      <span className="font-semibold text-slate-900 font-mono">
+                        {selectedStudent.phone}
+                      </span>
                     </div>
+
                     <div>
-                      <span className="text-slate-400 block text-[11px]">College Email</span>
-                      <span className="font-semibold text-slate-900 font-mono">{selectedStudent.email}</span>
+                      <span className="text-slate-400 block text-[11px]">
+                        College Email
+                      </span>
+                      <span className="font-semibold text-slate-900 font-mono">
+                        {selectedStudent.email}
+                      </span>
                     </div>
+
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Parent / Guardian Name</span>
-                      <span className="font-semibold text-slate-900">{selectedStudent.parentName}</span>
+                      <span className="text-slate-400 block text-[11px]">
+                        Parent / Guardian Name
+                      </span>
+                      <span className="font-semibold text-slate-900">
+                        {selectedStudent.parentName}
+                      </span>
                     </div>
+
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Guardian Contact</span>
-                      <span className="font-semibold text-slate-900 font-mono">{selectedStudent.parentContact}</span>
+                      <span className="text-slate-400 block text-[11px]">
+                        Guardian Contact
+                      </span>
+                      <span className="font-semibold text-slate-900 font-mono">
+                        {selectedStudent.parentContact}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* 2. Academic Information */}
+                {/* Academic Information */}
                 <div>
                   <span className="font-semibold uppercase tracking-wider text-slate-400 block text-[11px] mb-2">
                     2. Academic Information
                   </span>
+
                   <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-white border border-slate-200">
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Department</span>
-                      <span className="font-semibold text-slate-900">{selectedStudent.department}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[11px]">Sub-Department</span>
-                      <span className="font-semibold text-slate-900">{selectedStudent.subDepartment}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[11px]">Specialization</span>
-                      <span className="font-semibold text-slate-900">{selectedStudent.specialization}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[11px]">Year & Semester</span>
-                      <span className="font-semibold text-slate-900 font-mono">
-                        {selectedStudent.year} · {selectedStudent.semester}
+                      <span className="text-slate-400 block text-[11px]">
+                        Department
+                      </span>
+                      <span className="font-semibold text-slate-900">
+                        {selectedStudent.department}
                       </span>
                     </div>
+
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Batch Cohort</span>
-                      <span className="font-semibold text-slate-900 font-mono">{selectedStudent.batch}</span>
+                      <span className="text-slate-400 block text-[11px]">
+                        Sub-Department
+                      </span>
+                      <span className="font-semibold text-slate-900">
+                        {selectedStudent.subDepartment}
+                      </span>
                     </div>
+
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Curriculum Cohort</span>
-                      <span className="font-semibold text-slate-900">Autonomous B.Tech Regulation</span>
+                      <span className="text-slate-400 block text-[11px]">
+                        Specialization
+                      </span>
+                      <span className="font-semibold text-slate-900">
+                        {selectedStudent.specialization}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-slate-400 block text-[11px]">
+                        Year & Semester
+                      </span>
+                      <span className="font-semibold text-slate-900 font-mono">
+                        {selectedStudent.year} ·{' '}
+                        {selectedStudent.semester}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-slate-400 block text-[11px]">
+                        Batch Cohort
+                      </span>
+                      <span className="font-semibold text-slate-900 font-mono">
+                        {selectedStudent.batch}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-slate-400 block text-[11px]">
+                        Curriculum Cohort
+                      </span>
+                      <span className="font-semibold text-slate-900">
+                        Autonomous B.Tech Regulation
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* 3. Accommodation */}
+                {/* Accommodation */}
                 <div>
                   <span className="font-semibold uppercase tracking-wider text-slate-400 block text-[11px] mb-2">
                     3. Accommodation
                   </span>
+
                   <div className="p-4 rounded-xl bg-white border border-slate-200 flex items-center gap-2.5">
                     <Home className="w-4 h-4 text-slate-400 shrink-0" />
+
                     <div>
-                      <span className="text-slate-400 block text-[11px]">Campus Housing Record</span>
-                      <span className="font-medium text-slate-800">{selectedStudent.accommodation}</span>
+                      <span className="text-slate-400 block text-[11px]">
+                        Campus Housing Record
+                      </span>
+
+                      <span className="font-medium text-slate-800">
+                        {selectedStudent.accommodation}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* 4. Fee Information (University Finance Style) */}
+                {/* Fee Information */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-semibold uppercase tracking-wider text-slate-400 block text-[11px]">
                       4. Fee Information
                     </span>
-                    <StatusBadge status={fee.paymentStatus} />
+
+                    <StatusBadge
+                      status={fee.paymentStatus}
+                    />
                   </div>
 
                   <div className="p-4 rounded-xl bg-[#FAFBFB] border border-slate-200 space-y-3">
                     <div className="grid grid-cols-3 gap-3 pb-3 border-b border-slate-200">
                       <div>
-                        <span className="text-slate-400 block text-[11px]">Total Fee</span>
+                        <span className="text-slate-400 block text-[11px]">
+                          Total Fee
+                        </span>
+
                         <span className="font-bold text-slate-900 font-mono text-sm">
-                          ₹{fee.totalFee.toLocaleString()}
+                          ₹
+                          {fee.totalFee.toLocaleString()}
                         </span>
                       </div>
+
                       <div>
-                        <span className="text-slate-400 block text-[11px]">Paid Amount</span>
+                        <span className="text-slate-400 block text-[11px]">
+                          Paid Amount
+                        </span>
+
                         <span className="font-bold text-emerald-800 font-mono text-sm">
-                          ₹{fee.paid.toLocaleString()}
+                          ₹
+                          {fee.paid.toLocaleString()}
                         </span>
                       </div>
+
                       <div>
-                        <span className="text-slate-400 block text-[11px]">Pending Amount</span>
+                        <span className="text-slate-400 block text-[11px]">
+                          Pending Amount
+                        </span>
+
                         <span className="font-bold text-amber-700 font-mono text-sm">
-                          ₹{fee.pending.toLocaleString()}
+                          ₹
+                          {fee.pending.toLocaleString()}
                         </span>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-xs">
                       <div>
-                        <span className="text-slate-400 block text-[11px]">Due Date</span>
-                        <span className="text-slate-700 font-mono">{fee.dueDate}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 block text-[11px]">Last Payment Recorded</span>
+                        <span className="text-slate-400 block text-[11px]">
+                          Due Date
+                        </span>
+
                         <span className="text-slate-700 font-mono">
-                          {fee.lastPaymentDate || 'No settlement recorded'}
+                          {fee.dueDate}
                         </span>
                       </div>
+
+                      <div>
+                        <span className="text-slate-400 block text-[11px]">
+                          Last Payment Recorded
+                        </span>
+
+                        <span className="text-slate-700 font-mono">
+                          {fee.lastPaymentDate ||
+                            'No settlement recorded'}
+                        </span>
+                      </div>
+
                       {fee.transactionRef && (
                         <div className="col-span-2 pt-1 border-t border-slate-100">
-                          <span className="text-slate-400 block text-[11px]">Last Transaction Reference</span>
-                          <span className="text-slate-600 font-mono text-[11px]">{fee.transactionRef}</span>
+                          <span className="text-slate-400 block text-[11px]">
+                            Last Transaction Reference
+                          </span>
+
+                          <span className="text-slate-600 font-mono text-[11px]">
+                            {fee.transactionRef}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -627,11 +936,17 @@ export const AdminStudentsPage: React.FC = () => {
                     {fee.pending > 0 && (
                       <div className="pt-2">
                         <button
-                          onClick={() => handleOpenFeeSettlement(selectedStudent)}
+                          onClick={() =>
+                            handleOpenFeeSettlement(
+                              selectedStudent
+                            )
+                          }
                           className="w-full py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-[#0D5C46] font-semibold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
                         >
                           <CreditCard className="w-3.5 h-3.5" />
-                          <span>Record / Settle Inward Tuition Payment</span>
+                          <span>
+                            Record / Settle Inward Tuition Payment
+                          </span>
                         </button>
                       </div>
                     )}
@@ -641,10 +956,12 @@ export const AdminStudentsPage: React.FC = () => {
                 {/* Security Note */}
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/90 flex items-start gap-2.5">
                   <Lock className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+
                   <div>
                     <span className="font-semibold text-slate-800 block text-[11px]">
                       Institutional Security Notice
                     </span>
+
                     <p className="text-slate-500 text-[11px] mt-0.5">
                       Plaintext credentials and banking secret keys remain shielded per institutional data protection rules.
                     </p>
@@ -656,26 +973,34 @@ export const AdminStudentsPage: React.FC = () => {
         </Drawer>
       )}
 
-      {/* EDIT STUDENT INFORMATION MODAL */}
+      {/* Edit Student Information Modal */}
       {editingStudent && (
         <Modal
           isOpen={!!editingStudent}
-          onClose={() => setEditingStudent(null)}
+          onClose={() =>
+            setEditingStudent(null)
+          }
           title="Edit Student Information"
           subtitle={`Enrollment: ${editingStudent.enrollmentNo}`}
           maxWidth="xl"
         >
-          <form onSubmit={handleSaveStudentChanges} className="space-y-4 text-xs">
+          <form
+            onSubmit={handleSaveStudentChanges}
+            className="space-y-4 text-xs"
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Student Name *
                 </label>
+
                 <input
                   type="text"
                   required
                   value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
+                  onChange={(e) =>
+                    setEditName(e.target.value)
+                  }
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -684,11 +1009,14 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   College Email *
                 </label>
+
                 <input
                   type="email"
                   required
                   value={editEmail}
-                  onChange={(e) => setEditEmail(e.target.value)}
+                  onChange={(e) =>
+                    setEditEmail(e.target.value)
+                  }
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -697,11 +1025,14 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Phone Number *
                 </label>
+
                 <input
                   type="text"
                   required
                   value={editPhone}
-                  onChange={(e) => setEditPhone(e.target.value)}
+                  onChange={(e) =>
+                    setEditPhone(e.target.value)
+                  }
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -710,11 +1041,14 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Parent / Guardian Name
                 </label>
+
                 <input
                   type="text"
                   required
                   value={editParentName}
-                  onChange={(e) => setEditParentName(e.target.value)}
+                  onChange={(e) =>
+                    setEditParentName(e.target.value)
+                  }
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -723,11 +1057,14 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Guardian Phone Contact
                 </label>
+
                 <input
                   type="text"
                   required
                   value={editParentContact}
-                  onChange={(e) => setEditParentContact(e.target.value)}
+                  onChange={(e) =>
+                    setEditParentContact(e.target.value)
+                  }
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -736,11 +1073,14 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Department *
                 </label>
+
                 <input
                   type="text"
                   required
                   value={editDepartment}
-                  onChange={(e) => setEditDepartment(e.target.value)}
+                  onChange={(e) =>
+                    setEditDepartment(e.target.value)
+                  }
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -749,10 +1089,13 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Sub-Department
                 </label>
+
                 <input
                   type="text"
                   value={editSubDepartment}
-                  onChange={(e) => setEditSubDepartment(e.target.value)}
+                  onChange={(e) =>
+                    setEditSubDepartment(e.target.value)
+                  }
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -761,10 +1104,13 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Specialization
                 </label>
+
                 <input
                   type="text"
                   value={editSpecialization}
-                  onChange={(e) => setEditSpecialization(e.target.value)}
+                  onChange={(e) =>
+                    setEditSpecialization(e.target.value)
+                  }
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -773,11 +1119,15 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Academic Year *
                 </label>
+
                 <input
                   type="text"
                   required
                   value={editYear}
-                  onChange={(e) => setEditYear(e.target.value)}
+                  onChange={(e) =>
+                    setEditYear(e.target.value)
+                  }
+                  placeholder="e.g. 2nd Year or 3rd Year"
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -786,11 +1136,15 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Semester *
                 </label>
+
                 <input
                   type="text"
                   required
                   value={editSemester}
-                  onChange={(e) => setEditSemester(e.target.value)}
+                  onChange={(e) =>
+                    setEditSemester(e.target.value)
+                  }
+                  placeholder="e.g. Semester 3 or Semester 5"
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -799,11 +1153,15 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Batch Group *
                 </label>
+
                 <input
                   type="text"
                   required
                   value={editBatch}
-                  onChange={(e) => setEditBatch(e.target.value)}
+                  onChange={(e) =>
+                    setEditBatch(e.target.value)
+                  }
+                  placeholder="e.g. 2023-2027"
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
@@ -812,24 +1170,38 @@ export const AdminStudentsPage: React.FC = () => {
                 <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   Accommodation *
                 </label>
+
                 <input
                   type="text"
                   required
                   value={editAccommodation}
-                  onChange={(e) => setEditAccommodation(e.target.value)}
+                  onChange={(e) =>
+                    setEditAccommodation(
+                      e.target.value
+                    )
+                  }
+                  placeholder="Campus Residency · Block B · Room 314"
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                 />
               </div>
             </div>
 
+            {/* Security note */}
+            <p className="text-[11px] text-slate-400">
+              Note: Cryptographic credentials remain shielded. Changes are logged under administrator audit log.
+            </p>
+
             <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
               <button
                 type="button"
-                onClick={() => setEditingStudent(null)}
+                onClick={() =>
+                  setEditingStudent(null)
+                }
                 className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-medium cursor-pointer"
               >
                 Cancel
               </button>
+
               <button
                 type="submit"
                 className="px-4 py-2 bg-[#0D5C46] hover:bg-[#0B4A38] text-white font-semibold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs"
@@ -842,37 +1214,56 @@ export const AdminStudentsPage: React.FC = () => {
         </Modal>
       )}
 
-      {/* RECORD FEE SETTLEMENT MODAL */}
+      {/* Record Fee Settlement Modal */}
       {settlingFeeStudent && (
         <Modal
           isOpen={!!settlingFeeStudent}
-          onClose={() => setSettlingFeeStudent(null)}
+          onClose={() =>
+            setSettlingFeeStudent(null)
+          }
           title={`Record Fee Payment · ${settlingFeeStudent.name}`}
           subtitle={`Enrollment: ${settlingFeeStudent.enrollmentNo}`}
           maxWidth="md"
         >
           {(() => {
-            const fee = getStudentFee(settlingFeeStudent);
+            const fee =
+              getStudentFee(settlingFeeStudent);
 
             return (
-              <form onSubmit={handlePostPayment} className="space-y-4 text-xs">
+              <form
+                onSubmit={handlePostPayment}
+                className="space-y-4 text-xs"
+              >
                 <div className="p-3.5 rounded-xl bg-[#FAFBFB] border border-slate-200 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Total Course Fee:</span>
+                    <span className="text-slate-500">
+                      Total Course Fee:
+                    </span>
+
                     <span className="font-mono font-bold text-slate-900">
-                      ₹{fee.totalFee.toLocaleString()}
+                      ₹
+                      {fee.totalFee.toLocaleString()}
                     </span>
                   </div>
+
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Already Settled:</span>
+                    <span className="text-slate-500">
+                      Already Settled:
+                    </span>
+
                     <span className="font-mono font-bold text-emerald-800">
                       ₹{fee.paid.toLocaleString()}
                     </span>
                   </div>
+
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Outstanding Balance:</span>
+                    <span className="text-slate-500">
+                      Outstanding Balance:
+                    </span>
+
                     <span className="font-mono font-bold text-amber-700">
-                      ₹{fee.pending.toLocaleString()}
+                      ₹
+                      {fee.pending.toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -881,13 +1272,18 @@ export const AdminStudentsPage: React.FC = () => {
                   <label className="block font-semibold text-slate-700 uppercase tracking-wider mb-1">
                     Record Payment Amount (₹) *
                   </label>
+
                   <input
                     type="number"
                     required
                     min={1}
                     max={fee.pending}
                     value={paymentAmountInput}
-                    onChange={(e) => setPaymentAmountInput(e.target.value)}
+                    onChange={(e) =>
+                      setPaymentAmountInput(
+                        e.target.value
+                      )
+                    }
                     placeholder={`Enter settlement amount up to ₹${fee.pending.toLocaleString()}`}
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:outline-none focus:ring-1 focus:ring-[#0D5C46]"
                   />
@@ -896,11 +1292,14 @@ export const AdminStudentsPage: React.FC = () => {
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
                   <button
                     type="button"
-                    onClick={() => setSettlingFeeStudent(null)}
+                    onClick={() =>
+                      setSettlingFeeStudent(null)
+                    }
                     className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-medium cursor-pointer"
                   >
                     Cancel
                   </button>
+
                   <button
                     type="submit"
                     className="px-4 py-2 bg-[#0D5C46] hover:bg-[#0B4A38] text-white font-semibold rounded-xl cursor-pointer shadow-xs"
@@ -914,11 +1313,13 @@ export const AdminStudentsPage: React.FC = () => {
         </Modal>
       )}
 
-      {/* 11 & 12. CONTEXTUAL DELETE CONFIRMATION MODAL */}
+      {/* Delete Confirmation */}
       {studentToDelete && (
         <DeleteConfirmModal
           isOpen={!!studentToDelete}
-          onClose={() => setStudentToDelete(null)}
+          onClose={() =>
+            setStudentToDelete(null)
+          }
           onConfirm={handleDeleteConfirm}
           title="Delete Student Record?"
           recordName={`${studentToDelete.name} (${studentToDelete.enrollmentNo})`}

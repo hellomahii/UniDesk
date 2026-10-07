@@ -1,52 +1,245 @@
 # UniDesk — Unified University Service Platform
 
-UniDesk is a modern university platform routing student queries, timetable schedules, exam schedules, and tickets across IT, Finance, and Academic departments.
+UniDesk is a modern university service platform that provides **one front door for everything**. It routes student queries and university services across **IT, Finance, and Academic departments**.
+
+The platform brings together:
+
+* Student service requests
+* IT support tickets
+* Finance and fee management
+* Academic timetable
+* Exam schedules
+* University notices
+* Intent-based ticket routing
+* Student and user management
+* AI-assisted query understanding
 
 ---
 
 ## Prerequisites
 
-- **Node.js** (v18 or higher recommended)
-- **npm**, **yarn**, or **bun**
+Make sure you have the following installed:
+
+* **Node.js** v18 or higher
+* **npm**
+* Git
 
 ---
 
 ## How to Run
 
-### 1. Install Dependencies
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/hellomahii/UniDesk.git
+cd UniDesk
+```
+
+### 2. Install Dependencies
+
 ```bash
 npm install
 ```
 
-### 2. Start the Development Server
+### 3. Configure Environment Variables
+
+Create a `.env.local` file in the project root.
+
+For Gemini AI integration:
+
+```env
+GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+```
+
+Replace `YOUR_GEMINI_API_KEY` with your actual Gemini API key.
+
+**Do not commit your `.env.local` file to GitHub.**
+
+### 4. Start the Frontend
+
 ```bash
 npm run dev
 ```
 
-The application will start on:
-```
+The application will be available at:
+
+```text
 http://localhost:3000
 ```
-Open this URL in your web browser.
+
+---
+
+## Running the Backend
+
+UniDesk also includes a Python/FastAPI backend.
+
+Make sure Python is installed, then navigate to the backend directory:
+
+```bash
+cd backend
+```
+
+Install the required Python dependencies if a requirements file is provided:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start the backend:
+
+```bash
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
+The backend API will run at:
+
+```text
+http://127.0.0.1:8000
+```
 
 ---
 
 ## Available Scripts
 
-| Command | Description |
-| :--- | :--- |
-| `npm run dev` | Starts the Vite development server on port 3000 with network access (`0.0.0.0`). |
-| `npm run build` | Compiles TypeScript and creates an optimized production bundle in the `dist/` directory. |
-| `npm run preview` | Locally previews the production build created by `npm run build`. |
-| `npm run lint` | Runs TypeScript type checking (`tsc --noEmit`) to verify there are no syntax or type errors. |
+| Command           | Description                           |
+| :---------------- | :------------------------------------ |
+| `npm run dev`     | Starts the Vite development server    |
+| `npm run build`   | Builds the application for production |
+| `npm run preview` | Previews the production build         |
+| `npm run lint`    | Runs TypeScript type checking         |
 
 ---
 
-## Logging In & Accounts
+## Project Structure
 
-The common university login accepts college emails or user IDs:
+```text
+UniDesk/
+│
+├── backend/
+│   ├── database.py
+│   ├── main.py
+│   ├── users.py
+│   ├── students.py
+│   ├── tickets.py
+│   ├── routing.py
+│   ├── fees.py
+│   ├── timetables.py
+│   ├── exam_schedules.py
+│   └── notices.py
+│
+├── src/
+│   ├── components/
+│   ├── context/
+│   ├── pages/
+│   ├── types.ts
+│   └── App.tsx
+│
+├── .env.local
+├── package.json
+└── README.md
+```
 
-- **Student**: `mahi.patel@bennett.edu.in` or `mahi` (Password: any password or `student123`)
-- **IT Admin**: `it.admin@bennett.edu.in` or `it` (Password: any password or `admin123`)
-- **Finance Admin**: `finance.admin@bennett.edu.in` or `finance` (Password: any password or `admin123`)
-- **Academic Admin**: `academic.admin@bennett.edu.in` or `academic` (Password: any password or `admin123`)
+---
+
+## Login & Accounts
+
+UniDesk uses a common university login system.
+
+Depending on the configured backend database, users can log in using their registered **college email/user ID** and password.
+
+The application supports:
+
+* **Student**
+* **IT Admin**
+* **Finance Admin**
+* **Academic Admin**
+
+> Use the credentials configured in the backend database/environment rather than relying on hard-coded credentials in the frontend.
+
+---
+
+## UniDesk Routing
+
+UniDesk is designed around intelligent query routing.
+
+Student requests can be analyzed to determine:
+
+1. **User intent**
+2. **Relevant department**
+3. **Routing confidence**
+
+The routing model follows:
+
+| Confidence    | Action                          |
+| :------------ | :------------------------------ |
+| **Above 75%** | Automatically route the request |
+| **40% – 75%** | Ask for clarification           |
+| **Below 40%** | Route to human support          |
+
+The confidence information is primarily intended for administrative users.
+
+---
+
+## Departments
+
+### IT
+
+* Dashboard
+* Tickets
+* Intent Routing
+* Student/User Information
+* Notice+
+
+### Finance
+
+* Dashboard
+* Tickets
+* Intent Routing
+* Fee Management
+* Student/User Information
+* Notice+
+
+### Academic
+
+* Dashboard
+* Tickets
+* Intent Routing
+* Timetable
+* Exam Schedule
+* Student/User Information
+* Notice+
+
+### Student
+
+* Dashboard
+* Ask UniDesk
+* Timetable
+* Exam Schedule
+* Notices
+* My Tickets
+* Student Profile
+
+---
+
+## Gemini AI Integration
+
+UniDesk can use Google's Gemini API for AI-assisted university query understanding.
+
+The Gemini API key should be configured through the environment variable:
+
+```env
+GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+```
+
+AI functionality is intended to support the UniDesk service-routing experience rather than replace the university service portal itself.
+
+---
+
+## Development Notes
+
+* Frontend: **React + TypeScript**
+* Build tool: **Vite**
+* Styling: **Tailwind CSS**
+* Icons: **Lucide React**
+* Backend: **FastAPI**
+* Da
